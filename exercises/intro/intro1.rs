@@ -14,7 +14,6 @@
 // hint.
 
 
-
 fn main() {
     println!("Hello and");
     println!(r#"       welcome to...                      "#);
