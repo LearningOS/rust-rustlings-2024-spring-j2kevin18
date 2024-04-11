@@ -109,7 +109,7 @@ impl<T> LinkedList<T> {
         }
 
         while node_a != None {
-            println!("{}", *unsafe {&(*node_a.unwrap().as_ptr()).val});
+            println!("{}", *unsafe {&(*list_b.end.unwrap().as_ptr()).val});
             res.end = node_a;
             // node_a_val = unsafe {&(*node_a.unwrap().as_ptr()).val};
             // res.add(*node_a_val);
