@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -73,20 +73,22 @@ impl<T> LinkedList<T> {
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
     where T: PartialOrd + Copy + std::fmt::Display
 	{
-        
         let mut res = LinkedList::<T>::new();
         
+        let mut list_a = list_a;
+        let mut list_b = list_b;
         let mut node_a = list_a.start;
         let mut node_b = list_b.start;
         let mut node_a_val = unsafe {&(*node_a.unwrap().as_ptr()).val};
         let mut node_b_val = unsafe {&(*node_a.unwrap().as_ptr()).val};
-        if res.length == 0 {
-            if *node_a_val > *node_b_val {
-                res.start = node_b;
-            } else {
-                res.start = node_a;
-            }
+
+        res.length = list_a.length + list_b.length;
+        if *node_a_val > *node_b_val {
+            res.start = node_b;
+        } else {
+            res.start = node_a;
         }
+        
 
         while node_a != None && node_b != None {
             node_a_val = unsafe {&(*node_a.unwrap().as_ptr()).val};
@@ -98,33 +100,27 @@ impl<T> LinkedList<T> {
                 res.add(*node_a_val);
                 node_a = unsafe { (*node_a.unwrap().as_ptr()).next };
             }
-            res.length += 1;
-        }
-
-        if node_a != None {
-            unsafe {(*list_b.end.unwrap().as_ptr()).next = node_a};
-        }
-        if node_b != None {
-            unsafe {(*list_a.end.unwrap().as_ptr()).next = node_b};
         }
 
         while node_a != None {
-            println!("{}", *unsafe {&(*list_b.end.unwrap().as_ptr()).val});
-            res.end = node_a;
-            // node_a_val = unsafe {&(*node_a.unwrap().as_ptr()).val};
-            // res.add(*node_a_val);
+            node_a_val = unsafe {&(*node_a.unwrap().as_ptr()).val};
+            res.add(*node_a_val);
             node_a = unsafe { (*node_a.unwrap().as_ptr()).next };
-
-            res.length += 1;
         }
 
         while node_b != None {
-            res.end = node_b;
-            // node_b_val = unsafe {&(*node_b.unwrap().as_ptr()).val};
-            // res.add(*node_b_val);
+            node_b_val = unsafe {&(*node_b.unwrap().as_ptr()).val};
+            res.add(*node_b_val);
             node_b = unsafe { (*node_b.unwrap().as_ptr()).next };
+        }
 
-            res.length += 1;
+        node_a_val = unsafe {&(*list_a.end.unwrap().as_ptr()).val};
+        node_b_val = unsafe {&(*list_b.end.unwrap().as_ptr()).val};
+        println!("{}",node_b_val);
+        if *node_a_val > *node_b_val {
+            res.end = node_a;
+        } else {
+           res.end = node_b;
         }
 
 		res
