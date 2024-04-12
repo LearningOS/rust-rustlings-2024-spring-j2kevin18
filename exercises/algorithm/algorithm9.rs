@@ -2,10 +2,11 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
+
 
 use std::cmp::Ord;
 use std::default::Default;
+
 
 pub struct Heap<T>
 where
@@ -18,7 +19,7 @@ where
 
 impl<T> Heap<T>
 where
-    T: Default,
+    T: Default + Ord
 {
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
@@ -27,6 +28,8 @@ where
             comparator,
         }
     }
+
+   
 
     pub fn len(&self) -> usize {
         self.count
@@ -38,6 +41,21 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        //堆中的self.items是从1开始做索引的。
+        self.items.push(value);
+
+        let mut idx = self.count + 1;
+        while idx > 1 {
+            let p_idx = self.parent_idx(idx);
+            if (self.comparator)(&self.items[idx], &self.items[p_idx])  {
+                self.items.swap(p_idx, idx);
+                idx = p_idx;
+            } else {
+                break;
+            }
+        }
+        
+        self.count += 1;
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -58,7 +76,22 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+		let left_idx = self.left_child_idx(idx);
+        let right_idx = self.right_child_idx(idx);
+
+        if left_idx > self.count && right_idx > self.count {
+            panic!("left: {}, right: {}, length: {}, all index out of bound.", left_idx, right_idx, self.len());
+        } else if left_idx > self.count && right_idx <= self.count {
+            return right_idx;
+        } else if left_idx <= self.count && right_idx > self.count {
+            return left_idx;
+        }
+
+        if (self.comparator)(&self.items[left_idx], &self.items[right_idx]) {
+            left_idx
+        } else {
+            right_idx
+        }
     }
 }
 
@@ -79,13 +112,41 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default + Copy + Ord,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+        if self.count > 0 {
+            let res = self.items[1];
+
+            self.items.swap(1, self.count);
+            self.count -= 1;
+            
+            let mut idx = 1;
+            while idx <= self.count {
+                let mut small_child_idx = 0;
+                if self.right_child_idx(idx) <= self.count {
+                    small_child_idx = self.smallest_child_idx(idx);
+                } else {
+                    break;
+                }
+
+                if (self.comparator)(&self.items[small_child_idx], &self.items[idx]) {
+                    self.items.swap(small_child_idx, idx);
+                    idx = small_child_idx;
+                } else {
+                    break;
+                }
+            }
+
+            self.items.pop();
+            Some(res)
+        } else {
+            None
+        }
+            
     }
 }
 
@@ -129,6 +190,10 @@ mod tests {
         heap.add(2);
         heap.add(9);
         heap.add(11);
+        // heap.next();
+        // for v in &heap.items {
+        //     println!("{}", v);
+        // }
         assert_eq!(heap.len(), 4);
         assert_eq!(heap.next(), Some(2));
         assert_eq!(heap.next(), Some(4));
@@ -144,6 +209,9 @@ mod tests {
         heap.add(2);
         heap.add(9);
         heap.add(11);
+        // for _ in (0..4) {
+        //     println!("{}", heap.next().unwrap());
+        // }
         assert_eq!(heap.len(), 4);
         assert_eq!(heap.next(), Some(11));
         assert_eq!(heap.next(), Some(9));
