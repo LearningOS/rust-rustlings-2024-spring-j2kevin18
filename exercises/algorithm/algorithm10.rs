@@ -39,6 +39,8 @@ impl Graph for UndirectedGraph {
 
         self.adjacency_table_mutable().get_mut(edge.0).unwrap().push((edge.1.to_string(), edge.2));
         self.adjacency_table_mutable().get_mut(edge.1).unwrap().push((edge.0.to_string(), edge.2));
+
+
     }
 }
 pub trait Graph {
