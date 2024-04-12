@@ -3,7 +3,7 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -49,14 +49,25 @@ where
     }
 
     // Insert a value into the BST
-    fn insert(&mut self, value: T) {
+    fn insert(&mut self, value: T)  {
         //TODO
-    }
+        match &mut self.root {
+            None => {
+                let new_node = Some(Box::new(TreeNode::new(value)));
+                self.root = new_node;
+            },
+            Some(root) =>  root.insert(value),
+        }
+    } 
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        match &self.root {
+            None => false,
+            Some(root) =>  root.search(value),
+        }
+
     }
 }
 
@@ -65,10 +76,48 @@ where
     T: Ord,
 {
     // Insert a node into the tree
-    fn insert(&mut self, value: T) {
+    fn insert(&mut self, value: T) where T: PartialOrd {
         //TODO
-    }
-}
+            if value < self.value {
+                match &mut self.right {
+                    None => {
+                        let new_node = Some(Box::new(TreeNode::new(value)));
+                        self.right = new_node;
+                    },
+                    Some(right) =>  right.insert(value),
+                }
+               
+            } else if value > self.value {
+                match &mut self.left {
+                    None => {
+                        let new_node = Some(Box::new(TreeNode::new(value)));
+                        self.left = new_node;
+                    },
+                    Some(left) =>  left.insert(value),
+                }
+            }
+        }
+
+        fn search(&self, value: T) -> bool 
+        where T: PartialOrd {
+            if value == self.value {
+                true
+            } else if value < self.value {
+                match &self.right {
+                    None => false,
+                    Some(right) =>  right.search(value),
+                }
+               
+            } else {
+                match &self.left {
+                    None => false,
+                    Some(left) =>  left.search(value),
+                }
+            }
+        }
+} 
+        
+
 
 
 #[cfg(test)]
